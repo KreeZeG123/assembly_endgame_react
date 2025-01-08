@@ -1,25 +1,18 @@
+import clsx from "clsx";
 import { languages } from "../assets/languages";
 
-export default function Languages() {
-  /**
-   * Goal: Build out the main parts of our app
-   *
-   * Challenge: Create the language chips. Use the
-   * `languages.js` file to pull in the array of
-   * languages to use, which contains the language
-   * name, background color, and text color.
-   *
-   * Hint for layout: use a flex container that can wrap
-   * to layout the languages.
-   */
-
-  const languageElements = languages.map((lang) => {
+export default function Languages(props) {
+  const languageElements = languages.map((lang, index) => {
     const styles = {
       backgroundColor: lang.backgroundColor,
       color: lang.color,
     };
+
+    const className = clsx({
+      lost: index < props.wrongGuessCount,
+    });
     return (
-      <span key={lang.name} style={styles}>
+      <span key={lang.name} style={styles} className={className}>
         {lang.name}
       </span>
     );

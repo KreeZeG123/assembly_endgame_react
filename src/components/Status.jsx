@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { languages } from "../assets/languages";
 
-export default function Status() {
-  const [status, setStatus] = useState("win");
-
+export default function Status(props) {
   function getStatus() {
-    if (status === "farewell") {
-      return <h4>“Farewell HTML & CSS” 👋 </h4>;
-    } else if (status === "win" || status === "lose") {
+    if (props.status === "farewell") {
+      return (
+        <h4>
+          {"“Farewell " + languages[props.wrongGuessCount - 1].name + "” 👋"}
+        </h4>
+      );
+    } else if (props.status === "win" || props.status === "lose") {
       return (
         <>
-          <h3>{status == "win" ? "You win!" : "Game over!"}</h3>
+          <h3>{props.status == "win" ? "You win!" : "Game over!"}</h3>
           <p>
-            {status == "win"
+            {props.status == "win"
               ? "Well done! 🎉"
               : "You lose! Better start learning Assembly 😭"}
           </p>
@@ -23,18 +25,18 @@ export default function Status() {
   }
 
   function statusStyle() {
-    if (status === "farewell") {
+    if (props.status === "farewell") {
       return {
         backgroundColor: "#7A5EA7",
         border: "1px solid #323232",
         padding: "10px",
         color: "#fff",
       };
-    } else if (status === "win") {
+    } else if (props.status === "win") {
       return {
         backgroundColor: "#10A95B",
       };
-    } else if (status === "lose") {
+    } else if (props.status === "lose") {
       return {
         backgroundColor: "#BA2A2A",
       };
