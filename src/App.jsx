@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { languages } from "./assets/languages";
+import Confetti from "react-confetti";
+import { languages } from "./assets/languages.js";
+import { words } from "./assets/word.js";
 import Header from "./components/Header";
 import Keyboard from "./components/Keyboard";
 import Languages from "./components/Languages";
@@ -7,74 +9,94 @@ import Status from "./components/Status";
 import Word from "./components/Word";
 
 export default function App() {
-  const [status, setStatus] = useState(null);
-
-  const [currentWord, setCurrentWord] = useState("react");
-
-  const [keys, setKeys] = useState(Array(26).fill(null));
-
-  const wrongGuessCount = keys.reduce(
-    (accumulator, key) => accumulator + (key === false ? 1 : 0),
-    0
-  );
-
-  function gameWon() {
-    const lettersFromWord = new Set(
-      currentWord.split("").map((letter) => letter.toUpperCase())
-    );
-
-    for (const letter of lettersFromWord) {
-      const idx = letter.charCodeAt(0) - "A".charCodeAt(0);
-      if (keys[idx] === null || keys[idx] === false) {
-        return false;
-      }
-    }
-    return true;
+  function getRandomWord() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex].toUpperCase();
   }
 
-  const isGameWon = gameWon();
-  const isGameLost = wrongGuessCount >= languages.length - 1;
+  const [currentWord, setCurrentWord] = useState(() => getRandomWord());
+
+  const [guessedLetters, setGuessedLetters] = useState([]);
+
+  const [status, setStatus] = useState(null);
+
+  const numGuesses = languages.length - 1;
+  const wrongGuessCount = guessedLetters.reduce((acc, letter) => {
+    return acc + (currentWord.includes(letter) ? 0 : 1);
+  }, 0);
+  const numGuessesLeft = numGuesses - wrongGuessCount;
+
+  const isGameWon = [...new Set(currentWord)].every((letter) =>
+    guessedLetters.includes(letter)
+  );
+  const isGameLost = wrongGuessCount >= numGuesses;
   const isGameOver = isGameWon || isGameLost;
 
-  console.log("status : " + status);
+  const lastGuessedLetter = guessedLetters[guessedLetters.length - 1];
+  const isLastGuessIncorrect =
+    guessedLetters.length > 0 && !currentWord.includes(lastGuessedLetter);
 
-  function convertStatus() {
+  useEffect(() => {
     if (isGameWon) {
       setStatus("win");
     } else if (isGameLost) {
       setStatus("lose");
-    } else if (wrongGuessCount !== 0) {
+    } else if (isLastGuessIncorrect) {
       setStatus("farewell");
     } else {
       setStatus(null);
     }
+  }, [guessedLetters, isGameWon, isGameLost, isLastGuessIncorrect]);
+
+  function newGame() {
+    setCurrentWord(getRandomWord());
+    setGuessedLetters([]);
   }
-
-  useEffect(() => {
-    function convertStatus() {
-      if (isGameWon) {
-        setStatus("win");
-      } else if (isGameLost) {
-        setStatus("lose");
-      } else if (wrongGuessCount !== 0) {
-        setStatus("farewell");
-      } else {
-        setStatus(null);
-      }
-    }
-
-    // Appel de la fonction pour mettre à jour le statut
-    convertStatus();
-  }, [keys, isGameWon, isGameLost, wrongGuessCount]);
 
   return (
     <>
+      {isGameWon && <Confetti recycle={false} numberOfPieces={1000} />}
       <Header />
-      <Status status={status} wrongGuessCount={wrongGuessCount} />
+      <Status
+        status={status}
+        wrongGuessCount={wrongGuessCount}
+        currentWord={currentWord}
+      />
       <Languages wrongGuessCount={wrongGuessCount} />
-      <Word currentWord={currentWord} keys={keys} />
-      <Keyboard currentWord={currentWord} keys={keys} setKeys={setKeys} />
-      {isGameOver && <button id="new-game-btn">New Game</button>}
+      <Word
+        currentWord={currentWord}
+        guessedLetters={guessedLetters}
+        isGameLost={isGameLost}
+      />
+      {/* Combined visually-hidden aria-live region for status updates */}
+      <section className="sr-only" aria-live="polite" role="status">
+        <p>
+          {currentWord.includes(lastGuessedLetter)
+            ? `Correct! The letter ${lastGuessedLetter} is in the word.`
+            : `Sorry, the letter ${lastGuessedLetter} is not in the word.`}
+          You have {numGuessesLeft} attempts left.
+        </p>
+        <p>
+          Current word:{" "}
+          {currentWord
+            .split("")
+            .map((letter) =>
+              guessedLetters.includes(letter) ? letter + "." : "blank."
+            )
+            .join(" ")}
+        </p>
+      </section>
+      <Keyboard
+        currentWord={currentWord}
+        guessedLetters={guessedLetters}
+        setGuessedLetters={setGuessedLetters}
+        isGameOver={isGameOver}
+      />
+      {isGameOver && (
+        <button id="new-game-btn" onClick={newGame}>
+          New Game
+        </button>
+      )}
     </>
   );
 }

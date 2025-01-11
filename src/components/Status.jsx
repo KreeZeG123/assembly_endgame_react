@@ -1,11 +1,35 @@
+import clsx from "clsx";
+import PropTypes from "prop-types";
 import { languages } from "../assets/languages";
 
 export default function Status(props) {
+  function getFarewellText(language) {
+    const options = [
+      `Farewell, ${language}`,
+      `Adios, ${language}`,
+      `R.I.P., ${language}`,
+      `We'll miss you, ${language}`,
+      `Oh no, not ${language}!`,
+      `${language} bites the dust`,
+      `Gone but not forgotten, ${language}`,
+      `The end of ${language} as we know it`,
+      `Off into the sunset, ${language}`,
+      `${language}, it's been real`,
+      `${language}, your watch has ended`,
+      `${language} has left the building`,
+    ];
+
+    const randomIndex = Math.floor(Math.random() * options.length);
+    return options[randomIndex];
+  }
+
   function getStatus() {
     if (props.status === "farewell") {
       return (
         <h4>
-          {"“Farewell " + languages[props.wrongGuessCount - 1].name + "” 👋"}
+          {"“" +
+            getFarewellText(languages[props.wrongGuessCount - 1].name) +
+            "” 👋"}
         </h4>
       );
     } else if (props.status === "win" || props.status === "lose") {
@@ -24,30 +48,21 @@ export default function Status(props) {
     }
   }
 
-  function statusStyle() {
-    if (props.status === "farewell") {
-      return {
-        backgroundColor: "#7A5EA7",
-        border: "1px solid #323232",
-        padding: "10px",
-        color: "#fff",
-      };
-    } else if (props.status === "win") {
-      return {
-        backgroundColor: "#10A95B",
-      };
-    } else if (props.status === "lose") {
-      return {
-        backgroundColor: "#BA2A2A",
-      };
-    } else {
-      return {};
-    }
-  }
+  const className = clsx({
+    "game-status": true,
+    farewell: props.status === "farewell",
+    win: props.status === "win",
+    lose: props.status === "lose",
+  });
 
   return (
-    <section className="game-status" style={statusStyle()}>
+    <section aria-live="polite" role="status" className={className}>
       {getStatus()}
     </section>
   );
 }
+
+Status.propTypes = {
+  status: PropTypes.string.isRequired,
+  wrongGuessCount: PropTypes.number.isRequired,
+};

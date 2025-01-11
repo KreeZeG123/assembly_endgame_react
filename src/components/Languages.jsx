@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import PropTypes from "prop-types";
 import { languages } from "../assets/languages";
 
 export default function Languages(props) {
@@ -20,3 +21,7 @@ export default function Languages(props) {
 
   return <section className="language-chips">{languageElements}</section>;
 }
+
+Languages.propTypes = {
+  wrongGuessCount: PropTypes.number.isRequired,
+};

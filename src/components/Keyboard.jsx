@@ -1,27 +1,23 @@
 import { clsx } from "clsx";
+import PropTypes from "prop-types";
 
 export default function Keyboard(props) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  const word = props.currentWord.split("").map((item) => item.toUpperCase());
-
-  function letterIsValide(letter) {
-    return word.includes(letter);
-  }
-
   function handleClick(letter) {
-    const idx = letter.charCodeAt(0) - "A".charCodeAt(0);
-    props.setKeys((prevKey) => {
-      return prevKey.map((key, index) => {
-        return index === idx ? letterIsValide(letter) : key;
-      });
-    });
+    props.setGuessedLetters((prevLetters) =>
+      prevLetters.includes(letter) ? prevLetters : [...prevLetters, letter]
+    );
   }
 
-  const keyElements = alphabet.split("").map((letter, index) => {
+  const keyElements = alphabet.split("").map((letter) => {
     const className = clsx({
-      correct: props.keys[index] !== null && props.keys[index] === true,
-      wrong: props.keys[index] !== null && props.keys[index] === false,
+      correct:
+        props.guessedLetters.includes(letter) &&
+        props.currentWord.includes(letter),
+      wrong:
+        props.guessedLetters.includes(letter) &&
+        !props.currentWord.includes(letter),
     });
     return (
       <button
@@ -30,6 +26,9 @@ export default function Keyboard(props) {
         onClick={() => {
           handleClick(letter);
         }}
+        disabled={props.isGameOver}
+        aria-disabled={props.guessedLetters.includes(letter)}
+        aria-label={`Letter ${letter}`}
       >
         {letter}
       </button>
@@ -38,3 +37,10 @@ export default function Keyboard(props) {
 
   return <section className="keyboard-section">{keyElements}</section>;
 }
+
+Keyboard.propTypes = {
+  currentWord: PropTypes.string.isRequired,
+  guessedLetters: PropTypes.array.isRequired,
+  setGuessedLetters: PropTypes.func.isRequired,
+  isGameOver: PropTypes.bool.isRequired,
+};
