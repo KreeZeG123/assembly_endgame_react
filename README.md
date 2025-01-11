@@ -1,6 +1,6 @@
 # 🎮 Assembly: Endgame  
 
-Bienvenue dans le dépôt de **Assembly: Endgame**, un projet final du cours [Learn React for Beginners](https://scrimba.com/learn/learnreact) sur Scrimba. Ce jeu interactif et éducatif a été conçu pour mettre en pratique toutes les compétences React apprises au cours des chapitres précédents.  
+Bienvenue dans le dépôt de **Assembly: Endgame**, le projet final du cours [Learn React for Beginners](https://scrimba.com/learn/learnreact) sur Scrimba. Ce jeu interactif et éducatif a été conçu pour mettre en pratique toutes les compétences React apprises au cours des chapitres précédents.  
 
 ## 📜 Description  
 
